@@ -4,6 +4,7 @@ declare module 'neucron-sdk' {
           throw new Error("Method not implemented.");
         }
         authentication: {
+            getWalletIdFromToken(access_token: string): unknown;
             login(arg0: { email: any; password: any; }): unknown;
             Login(credentials: { email: string; password: string }): Promise<{ success: boolean }>;
             signUp(credentials: { email: string; password: string }): Promise<{ success: boolean }>;
