@@ -4,9 +4,7 @@ import type { RequestHandler } from "@sveltejs/kit";
 const prisma = new PrismaClient();
 
 const getUserIdFromRequest = (request: Request) => {
-  // Placeholder for extracting user ID from the request
-  // Replace with actual implementation
-  return 1;
+  return 1; // Placeholder, replace with actual implementation.
 };
 
 export const GET: RequestHandler = async ({ request }) => {
@@ -19,16 +17,16 @@ export const GET: RequestHandler = async ({ request }) => {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { walletAddress: true },
+      select: { email: true, walletAddress: true },
     });
 
     if (!user) {
       return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
     }
 
-    return new Response(JSON.stringify({ walletAddress: user.walletAddress }), { status: 200 });
+    return new Response(JSON.stringify({ email: user.email, walletAddress: user.walletAddress }), { status: 200 });
   } catch (error) {
-    console.error("Error fetching wallet address:", error);
-    return new Response(JSON.stringify({ error: "Error fetching wallet address" }), { status: 500 });
+    console.error("Error fetching user profile:", error);
+    return new Response(JSON.stringify({ error: "Error fetching user profile" }), { status: 500 });
   }
 };

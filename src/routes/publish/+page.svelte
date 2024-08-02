@@ -37,7 +37,7 @@
       content,
       category,
       image: image || null,
-      userWallet: walletAddress, // Include the wallet address in the payload
+      userWallet: walletAddress,
     };
 
     const response = await fetch('/api/news', {

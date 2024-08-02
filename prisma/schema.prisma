@@ -13,22 +13,24 @@ model Category {
   news  NewsArticle[]
 }
 
+// Prisma schema needs to match this approach
 model NewsArticle {
-  id            Int       @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   title         String
   content       String
+  category      String
   image         String?
-  userEmail     String?
   userWallet    String
-  categoryId    Int
-  category      Category  @relation(fields: [categoryId], references: [id])
-  popularity    String?
-  likes         Int       @default(0)
-  createdAt     DateTime  @default(now())
-  comments      Comment[]
-  commentsCount Int       @default(0)
-  trending      Boolean   @default(false) // Add a field to mark trending articles
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  commentsCount Int      @default(0) // Add this field
+
+  Category      Category[]
+  Comment       Comment[]
 }
+
 
 model Comment {
   id            Int          @id @default(autoincrement())
@@ -40,10 +42,11 @@ model Comment {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  password     String
-  walletAddress String  @unique // Ensure walletAddress is unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password      String
+  walletAddress String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  NewsArticle   NewsArticle[]
 }

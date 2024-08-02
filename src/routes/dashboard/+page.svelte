@@ -18,16 +18,21 @@
   let popularNews: NewsArticle[] = [];
   let errorMessage = '';
   let isLoading = true;
+  let selectedCategory = '';
 
   async function fetchNews() {
     isLoading = true;
     errorMessage = '';
     try {
-      const response = await fetch('/api/news');
+      let query = '/api/news';
+      if (selectedCategory) {
+        query += `?category=${selectedCategory}`;
+      }
+      const response = await fetch(query);
       if (response.ok) {
         const news = await response.json();
         recentNews = news.slice(0, 3); // Display the first 3 news articles as recent news
-        popularNews = news.filter((article: { popularity: string; }) => article.popularity === 'high').slice(0, 3); // Display the first 3 popular news articles
+        // popularNews = news.filter(article => article.popularity === 'high').slice(0, 3); // Display the first 3 popular news articles
       } else {
         const errorData = await response.json();
         errorMessage = `Failed to fetch news: ${errorData.error}`;
@@ -38,6 +43,11 @@
     } finally {
       isLoading = false;
     }
+  }
+
+  function handleCategoryClick(category: string) {
+    selectedCategory = category;
+    fetchNews();
   }
 
   onMount(() => {
@@ -54,19 +64,16 @@
     <nav class="mt-4">
       <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/publish">Publish</a>
       <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/feeds">Feeds</a>
-      <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/profiles">Profile</a>
+      <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/profile">Profile</a>
       <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/settings">Settings</a>
     </nav>
     <!-- Categories and Notifications -->
     <div class="p-6 bg-gray-100 border-t border-gray-300 mt-4">
       <h2 class="text-xl font-semibold mb-4 text-gray-900">Categories</h2>
       <ul class="space-y-2">
-        <li><a href="/" class="text-blue-500 hover:underline">India</a></li>
-        <li><a href="/" class="text-blue-500 hover:underline">World</a></li>
-        <li><a href="/" class="text-blue-500 hover:underline">Sports</a></li>
-        <li><a href="/" class="text-blue-500 hover:underline">Entertainment</a></li>
-        <li><a href="/" class="text-blue-500 hover:underline">Politics</a></li>
-        <li><a href="/" class="text-blue-500 hover:underline">Entertainment</a></li>
+        {#each ['India', 'World', 'Sports', 'Entertainment', 'Politics'] as category}
+          <li><a href="javascript:void(0);" class="text-blue-500 hover:underline" on:click={() => handleCategoryClick(category)}>{category}</a></li>
+        {/each}
       </ul>
       <h2 class="text-xl font-semibold mt-8 mb-4 text-gray-900">Notifications</h2>
       <p class="text-gray-700">You have 3 new notifications.</p>
@@ -87,62 +94,64 @@
 
     <!-- Main content area -->
     <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 p-6">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Recent News -->
-          <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-            <h2 class="text-2xl font-semibold mb-4 text-gray-900">Recent News</h2>
-            {#if isLoading}
-              <p class="text-lg font-medium text-gray-600">Loading...</p>
-            {:else if errorMessage}
-              <p class="text-red-600">{errorMessage}</p>
-            {:else if recentNews.length === 0}
-              <p class="text-lg font-medium text-gray-600">No recent news available.</p>
-            {:else}
-              {#each recentNews as article}
-                <div class="p-4 mb-4 bg-gray-100 rounded-lg shadow-md">
-                  <h3 class="text-xl font-bold text-gray-800">{article.title}</h3>
-                  <p class="text-gray-700">{article.content}</p>
-                  {#if article.image}
-                    <img src={article.image} alt={article.title} class="w-full h-auto mt-2 rounded-lg"/>
-                  {/if}
-                  <div class="mt-4 text-sm text-gray-600">
-                    <span>Published by: {article.userEmail || 'Anonymous'}</span>
-                    <span class="ml-4">Category: {article.category.name}</span>
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 p-6">
+        <div class="container mx-auto px-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Recent News -->
+            <div class="flex-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+              <h2 class="text-2xl font-semibold mb-4 text-gray-900">Recent News</h2>
+              {#if isLoading}
+                <p class="text-lg font-medium text-gray-600">Loading...</p>
+              {:else if errorMessage}
+                <p class="text-red-600">{errorMessage}</p>
+              {:else if recentNews.length === 0}
+                <p class="text-lg font-medium text-gray-600">No recent news available.</p>
+              {:else}
+                {#each recentNews as article}
+                  <div class="p-4 mb-4 bg-gray-100 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-gray-800">{article.title}</h3>
+                    <p class="text-gray-700">{article.content}</p>
+                    {#if article.image}
+                      <img src={article.image} alt={article.title} class="w-full h-auto mt-2 rounded-lg"/>
+                    {/if}
+                    <div class="mt-4 text-sm text-gray-600">
+                      <span>Published by: {article.userEmail || 'Anonymous'}</span>
+                      <span class="ml-4">Category: {article.category.name}</span>
+                    </div>
                   </div>
-                </div>
-              {/each}
-            {/if}
-          </div>
-
-          <!-- Popular News -->
-          <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-            <h2 class="text-2xl font-semibold mb-4 text-gray-900">Popular News</h2>
-            {#if isLoading}
-              <p class="text-lg font-medium text-gray-600">Loading...</p>
-            {:else if errorMessage}
-              <p class="text-red-600">{errorMessage}</p>
-            {:else if popularNews.length === 0}
-              <p class="text-lg font-medium text-gray-600">No popular news available.</p>
-            {:else}
-              {#each popularNews as article}
-                <div class="p-4 mb-4 bg-gray-100 rounded-lg shadow-md">
-                  <h3 class="text-xl font-bold text-gray-800">{article.title}</h3>
-                  <p class="text-gray-700">{article.content}</p>
-                  {#if article.image}
-                    <img src={article.image} alt={article.title} class="w-full h-auto mt-2 rounded-lg"/>
-                  {/if}
-                  <div class="mt-4 text-sm text-gray-600">
-                    <span>Published by: {article.userEmail || 'Anonymous'}</span>
-                    <span class="ml-4">Category: {article.category.name}</span>
-                    <span class="ml-4">Popularity: {article.popularity || 'N/A'}</span>
+                {/each}
+              {/if}
+            </div>
+  
+            <!-- Popular News -->
+            <div class="flex-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+              <h2 class="text-2xl font-semibold mb-4 text-gray-900">Popular News</h2>
+              {#if isLoading}
+                <p class="text-lg font-medium text-gray-600">Loading...</p>
+              {:else if errorMessage}
+                <p class="text-red-600">{errorMessage}</p>
+              {:else if popularNews.length === 0}
+                <p class="text-lg font-medium text-gray-600">No popular news available.</p>
+              {:else}
+                {#each popularNews as article}
+                  <div class="p-4 mb-4 bg-gray-100 rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-gray-800">{article.title}</h3>
+                    <p class="text-gray-700">{article.content}</p>
+                    {#if article.image}
+                      <img src={article.image} alt={article.title} class="w-full h-auto mt-2 rounded-lg"/>
+                    {/if}
+                    <div class="mt-4 text-sm text-gray-600">
+                      <span>Published by: {article.userEmail || 'Anonymous'}</span>
+                      <span class="ml-4">Category: {article.category.name}</span>
+                      <span class="ml-4">Popularity: {article.popularity || 'N/A'}</span>
+                    </div>
                   </div>
-                </div>
-              {/each}
-            {/if}
+                {/each}
+              {/if}
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   </div>
-</div>
+  
