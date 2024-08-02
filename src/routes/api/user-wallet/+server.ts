@@ -1,17 +1,30 @@
 import { PrismaClient } from "@prisma/client";
 import type { RequestHandler } from "@sveltejs/kit";
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
-const getUserIdFromRequest = (request: Request) => {
-  // Placeholder for extracting user ID from the request
-  // Replace with actual implementation
-  return 1;
+const SECRET_KEY = 'your_secret_key'; // Replace with your actual secret key
+
+const getUserIdFromToken = (token: string): number | null => {
+  try {
+    const decoded: any = jwt.verify(token, SECRET_KEY);
+    return decoded.userId; // Adjust based on your token payload structure
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    return null;
+  }
 };
 
 export const GET: RequestHandler = async ({ request }) => {
   try {
-    const userId = getUserIdFromRequest(request);
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const userId = getUserIdFromToken(token);
 
     if (!userId) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
