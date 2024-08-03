@@ -1,52 +1,45 @@
-datasource db { 
-  provider = "postgresql" 
-  url      = env("DATABASE_URL") 
-} 
- 
-generator client { 
-  provider = "prisma-client-js" 
-} 
- 
-model Category {
-  id    Int      @id @default(autoincrement())
-  name  String   @unique
-  news  NewsArticle[]
+generator client {
+  provider = "prisma-client-js"
 }
 
-// Prisma schema needs to match this approach
-model NewsArticle {
-  id            Int      @id @default(autoincrement())
-  title         String
-  content       String
-  category      String
-  image         String?
-  userWallet    String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  userId        Int
-  user          User     @relation(fields: [userId], references: [id])
-  commentsCount Int      @default(0) // Add this field
-
-  Category      Category[]
-  Comment       Comment[]
-}
-
-
-model Comment {
-  id            Int          @id @default(autoincrement())
-  newsArticleId Int
-  newsArticle   NewsArticle  @relation(fields: [newsArticleId], references: [id])
-  content       String
-  user          String       @default("Anonymous")
-  createdAt     DateTime     @default(now())
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
-  password      String
-  walletAddress String   @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  NewsArticle   NewsArticle[]
+  id             String   @id @default(uuid())
+  email          String   @unique
+  password       String
+  walletAddress  String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  NewsArticles   NewsArticle[]
+  Comments       Comment[]
+}
+
+model NewsArticle {
+  id             String   @id @default(uuid())
+  title          String
+  content        String
+  category       String
+  images         String[]
+  userId         String
+  walletAddress  String
+  popularity     Int       @default(0)
+  likes          Int       @default(0)
+  commentsCount  Int       @default(0)
+  createdAt      DateTime  @default(now())
+  user           User      @relation(fields: [userId], references: [id])
+  Comments       Comment[]
+}
+
+model Comment {
+  id             String   @id @default(uuid())
+  newsArticleId  String
+  content        String
+  userId         String
+  createdAt      DateTime @default(now())
+  user           User      @relation(fields: [userId], references: [id])
+  newsArticle    NewsArticle @relation(fields: [newsArticleId], references: [id])
 }

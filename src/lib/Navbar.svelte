@@ -42,7 +42,7 @@
         </li>
         <!-- Contact Us Block -->
         <li>
-          <a href="/contact-us" class="block py-2 px-4 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-200">
+          <a href="/contact" class="block py-2 px-4 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-200">
             Contact Us
           </a>
         </li>
