@@ -4,10 +4,11 @@ import type { RequestHandler } from "@sveltejs/kit";
 const prisma = new PrismaClient();
 
 const getUserIdFromRequest = (request: Request): number => {
-  return 1; // Placeholder, replace with actual implementation.
+  // Placeholder, replace with actual implementation to extract user ID from the request
+  return 1;
 };
 
-export const GET: RequestHandler = async ({ request }: { request: Request }) => {
+export const GET: RequestHandler = async ({ request }) => {
   try {
     const userId = getUserIdFromRequest(request);
 
