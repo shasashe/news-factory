@@ -2,10 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import type { RequestHandler } from "@sveltejs/kit";
 
 const prisma = new PrismaClient();
-
-// Placeholder function to extract user ID from the request
 const getUserIdFromRequest = (request: Request): number | null => {
-  // Replace this with the actual implementation to extract user ID
+
   return 1;
 };
 
