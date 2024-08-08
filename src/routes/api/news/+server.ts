@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import type { RequestHandler } from "@sveltejs/kit";
+import NeucronSDK from "neucron-sdk";
 const prisma = new PrismaClient();
 // TypeScript interface for the request body in POST requests
 interface NewsArticlePayload {
@@ -49,18 +50,15 @@ interface NewsArticlePayload {
   category: string;
   image?: string;
   userWallet: string;
-
 }
-
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const { title, content, category, image, userWallet}: NewsArticlePayload = await request.json();
+    const { title, content, category, image, userWallet }: NewsArticlePayload = await request.json();
 
-    if (!title || !content || !category || !userWallet ) {
-      return new Response(JSON.stringify({ error: "Title, content, category, user wallet are required." }), { status: 400 });
+    if (!title || !content || !category || !userWallet) {
+      return new Response(JSON.stringify({ error: "Title, content, category, and user wallet are required." }), { status: 400 });
     }
-
 
     let categoryRecord = await prisma.category.findUnique({ where: { name: category } });
     if (!categoryRecord) {
@@ -80,6 +78,17 @@ export const POST: RequestHandler = async ({ request }) => {
         userWallet,
       },
     });
+
+    const neucron = new NeucronSDK();
+    const walletModule = neucron.wallet;
+
+    const transactionResponse = await walletModule.sendTransaction({
+      walletAddress: userWallet,
+      amount: 5, // Example transaction of 5 satoshis
+      description: `Transaction for publishing news article: ${newArticle.title}`,
+    });
+
+    console.log('Blockchain transaction response:', transactionResponse);
 
     return new Response(JSON.stringify(newArticle), { status: 201 });
   } catch (error) {

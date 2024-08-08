@@ -10,6 +10,7 @@ declare module 'neucron-sdk' {
             signUp(credentials: { email: string; password: string }): Promise<{ success: boolean }>;
         };
         wallet: {
+            sendTransaction(arg0: { walletAddress: any; amount: number; description: string; }): unknown;
             getWalletBalance(params: any): Promise<{ data: { balance: { summary: string } } }>;
             getAddressesByWalletId(params: any): Promise<{ data: { addresses: string[] } }>;
         };
