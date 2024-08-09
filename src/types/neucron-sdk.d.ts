@@ -1,5 +1,7 @@
 declare module 'neucron-sdk' {
     class NeucronSDK {
+        transactionModule: any;
+      transaction: any;
         publishArticle(arg0: { title: string; content: string; category: string; image: string | undefined; userWallet: string; articleId: number; }) {
           throw new Error("Method not implemented.");
         }

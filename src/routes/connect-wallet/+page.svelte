@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { slide } from 'svelte/transition';
-  
-  export let form: { success?: boolean; balance?: number; address?: string };
+  export let form: { success?: boolean; balance?: number; address?: string; token?: string };
 
-  if (typeof window !== 'undefined' && form?.success) {
+  if (typeof window !== 'undefined' && form?.success && form.token) {
+    // Save the token in local storage
+    window.localStorage.setItem('token', form.token);
+
+    // Redirect to the dashboard
     window.location.href = "/dashboard";
   }
 
@@ -13,6 +15,10 @@
     showLogin = !showLogin;
   }
 </script>
+
+
+  
+
 
 <div class="min-h-screen flex flex-col items-center justify-center space-y-10 bg-gray-900 text-white">
   <div class="w-full max-w-md p-8 bg-gray-800 rounded-lg ring-2 ring-gray-700">

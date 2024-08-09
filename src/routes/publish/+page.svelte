@@ -7,6 +7,7 @@
   let image = '';
   let successMessage = '';
   let walletAddress = '';
+  let transactionLink = ''; 
 
   let categories = [
     { name: 'World' },
@@ -23,6 +24,7 @@
       if (response.ok) {
         const data = await response.json();
         walletAddress = data.walletAddress;
+        console.log('Wallet Address:', walletAddress); // Debug log
       } else {
         console.error('Failed to fetch wallet address');
       }
@@ -32,30 +34,49 @@
   });
 
   async function submitNews() {
-    const data = {
-      title,
-      content,
-      category,
-      image: image || null,
-      userWallet: walletAddress, // Include the wallet address in the payload
-    };
+  const data = {
+    title,
+    content,
+    category,
+    image: image || null,
+    userWallet: walletAddress,
+  };
 
+  const token = window.localStorage.getItem('token'); // Ensure the correct key is used
+  console.log('Token:', token); // Debug log
+
+  if (!token) {
+    successMessage = 'Authentication token not found';
+    return;
+  }
+
+  try {
     const response = await fetch('/api/news', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+ // Include the token in the Authorization header
+      },
       body: JSON.stringify(data),
     });
 
     if (response.ok) {
       const result = await response.json();
       successMessage = 'News article successfully created!';
+      transactionLink = result.transactionLink; 
       console.log('News created:', result);
     } else {
       const errorData = await response.json();
       console.error('Error creating news:', errorData.error);
       successMessage = `Failed to create news article: ${errorData.error}`;
     }
+  } catch (error) {
+    console.error('Network error:', error);
+    successMessage = 'Failed to create news article due to a network error';
   }
+}
+
 </script>
 
 <section class="bg-white dark:bg-gray-900">
@@ -121,4 +142,7 @@
       </aside>
     </div>
   </div>
+    {#if transactionLink}
+    <p class="mt-4 text-lg font-medium text-blue-600 dark:text-blue-400">Transaction Link: <a href={transactionLink} target="_blank">{transactionLink}</a></p>
+    {/if}
 </section>
