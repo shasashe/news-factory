@@ -5,9 +5,7 @@
   let content = '';
   let category = '';
   let image = '';
-  let successMessage = '';
   let walletAddress = '';
-  let transactionLink = ''; 
 
   let categories = [
     { name: 'World' },
@@ -24,7 +22,6 @@
       if (response.ok) {
         const data = await response.json();
         walletAddress = data.walletAddress;
-        console.log('Wallet Address:', walletAddress); // Debug log
       } else {
         console.error('Failed to fetch wallet address');
       }
@@ -33,51 +30,27 @@
     }
   });
 
-  async function submitNews() {
-  const data = {
-    title,
-    content,
-    category,
-    image: image || null,
-    userWallet: walletAddress,
-  };
+  function submitNews() {
+    const newsData = {
+      title,
+      content,
+      category,
+      image: image || null,
+      userWallet: walletAddress,
+    };
 
-  const token = window.localStorage.getItem('token'); // Ensure the correct key is used
-  console.log('Token:', token); // Debug log
+    // Store newsData in sessionStorage
+    sessionStorage.setItem('newsData', JSON.stringify(newsData));
 
-  if (!token) {
-    successMessage = 'Authentication token not found';
-    return;
+    // Redirect to payment page
+    window.location.href = '/pay';
   }
-
-  try {
-    const response = await fetch('/api/news', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
- // Include the token in the Authorization header
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      successMessage = 'News article successfully created!';
-      transactionLink = result.transactionLink; 
-      console.log('News created:', result);
-    } else {
-      const errorData = await response.json();
-      console.error('Error creating news:', errorData.error);
-      successMessage = `Failed to create news article: ${errorData.error}`;
-    }
-  } catch (error) {
-    console.error('Network error:', error);
-    successMessage = 'Failed to create news article due to a network error';
-  }
-}
-
 </script>
+
+<section class="bg-white dark:bg-gray-900">
+  <!-- The rest of your component's HTML remains the same -->
+</section>
+
 
 <section class="bg-white dark:bg-gray-900">
   <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-12">
@@ -119,10 +92,6 @@
           <button type="submit" class="bg-slate-900 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-white font-semibold h-12 px-6 rounded-lg w-full flex items-center justify-center sm:w-auto dark:bg-sky-500 dark:highlight-white/20 dark:hover:bg-sky-400">
             Submit
           </button>
-
-          {#if successMessage}
-            <p class="mt-4 text-lg font-medium {successMessage.includes('success') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}">{successMessage}</p>
-          {/if}
         </form>
       </main>
 
@@ -142,7 +111,5 @@
       </aside>
     </div>
   </div>
-    {#if transactionLink}
-    <p class="mt-4 text-lg font-medium text-blue-600 dark:text-blue-400">Transaction Link: <a href={transactionLink} target="_blank">{transactionLink}</a></p>
-    {/if}
+
 </section>

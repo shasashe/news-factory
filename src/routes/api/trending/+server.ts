@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export const GET: RequestHandler = async () => {
   try {
     const trendingNews = await prisma.newsArticle.findMany({
-      orderBy: { commentsCount: 'desc' },
+      orderBy: { commentCount: 'desc' }, // Use comments field if it's for count
       take: 5
     });
 

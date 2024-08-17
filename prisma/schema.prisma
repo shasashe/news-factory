@@ -1,21 +1,16 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            Int       @id @default(autoincrement())
-  email         String    @unique
-  password      String
-  walletAddress String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+generator client {
+  provider = "prisma-client-js"
+}
 
-  Comment Comment[]
+model Category {
+  id   Int           @id @default(autoincrement())
+  name String        @unique
+  news NewsArticle[]
 }
 
 model NewsArticle {
@@ -23,27 +18,33 @@ model NewsArticle {
   title         String
   content       String
   image         String?
-  createdAt     DateTime  @default(now())
+  userEmail     String?
+  userWallet    String
+  txId          String    // Ensure this field is defined
+  categoryId    Int
+  category      Category  @relation(fields: [categoryId], references: [id])
+  popularity    String?
   likes         Int       @default(0)
+  createdAt     DateTime  @default(now())
   comments      Comment[]
   commentsCount Int       @default(0)
-  category      Category  @relation(fields: [categoryId], references: [id])
-  categoryId    Int
-  userWallet    String
+  trending      Boolean   @default(false)
 }
 
-model Category {
-  id          Int          @id @default(autoincrement())
-  name        String        @unique
-  newsArticles NewsArticle[]
-}
 
 model Comment {
-  id           Int          @id @default(autoincrement())
-  content      String
-  createdAt    DateTime     @default(now())
-  newsArticle  NewsArticle  @relation(fields: [newsArticleId], references: [id])
+  id            Int         @id @default(autoincrement())
   newsArticleId Int
-  user         User         @relation(fields: [userId], references: [id])
-  userId       Int
+  newsArticle   NewsArticle @relation(fields: [newsArticleId], references: [id])
+  content       String
+  user          String      @default("Anonymous")
+  createdAt     DateTime    @default(now())
+}
+
+model User {
+  id            Int     @id @default(autoincrement())
+  email         String  @unique
+  password      String
+  walletAddress String  @unique
+  accessToken   String? // Add this line to store the access token
 }

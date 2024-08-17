@@ -1,4 +1,3 @@
-
 <script>
   import { onMount } from 'svelte';
 
@@ -8,6 +7,9 @@
   let profileErrorMessage = '';
 
   // News articles data
+  /**
+     * @type {string | any[]}
+     */
   let newsArticles = [];
   let newsErrorMessage = '';
 
@@ -59,9 +61,9 @@
       <h1 class="block py-2.5 px-10 font-bold text-gray-900">Profile</h1>
     </div>
     <nav class="mt-4">
-      <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/profiles">Profile</a>
-      <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/account-settings">Account Settings</a>
-      <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/subscription-preferences">Subscription Preferences</a>
+      <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/profile">Profile</a>
+      <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/">Account Settings</a>
+      <a class="flex items-center justify-center h-12 text-gray-700 hover:bg-gray-100 hover:text-blue-700" href="/">Subscription Preferences</a>
     </nav>
   </div>
 
@@ -84,27 +86,25 @@
         <section class="bg-white p-6 rounded-lg shadow-lg border border-gray-200 mb-6">
           <h2 class="text-2xl font-semibold mb-4 text-gray-900">User Information</h2>
           <div class="flex items-center space-x-4">
-            <img src="https://t4.ftcdn.net/jpg/04/83/90/95/360_F_483909569_OI4LKNeFgHwvvVju60fejLd9gj43dIcd.jpg" alt="User Photo" class="w-24 h-24 rounded-full border border-gray-300">
+            <img src="https://t4.ftcdn.net/jpg/04/83/90/95/360_F_483909569_OI4LKNeFgHwvvVju60fejLd9gj43dIcd.jpg" alt="Profile picture of {email}" class="w-24 h-24 rounded-full border border-gray-300">
             <div>
               <p class="text-lg font-semibold text-gray-900">{email}</p>
             </div>
           </div>
+          <h2 class="text-2xl font-semibold mb-4 text-gray-900">Connected Wallet Details</h2>
+          <ul class="space-y-4">
+            <li class="flex justify-between text-gray-700">
+              <span>Wallet Address:</span>
+              <span>{walletAddress}</span>
+            </li>
+          </ul>
         </section>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-          <!-- Connected Wallet Details -->
-          <section class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-            <h2 class="text-2xl font-semibold mb-4 text-gray-900">Connected Wallet Details</h2>
-            <ul class="space-y-4">
-              <li class="flex justify-between text-gray-700">
-                <span>Wallet Address:</span>
-                <span>{walletAddress}</span>
-              </li>
-            </ul>
-          </section>
+      
 
-          <!-- Daily Newspaper Archive -->
-          <section class="flex-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+          <!-- Recent News -->
+          <section class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
             <h2 class="text-2xl font-semibold mb-4 text-gray-900">Recent News</h2>
             
             {#if newsErrorMessage}
@@ -127,8 +127,6 @@
               {/each}
             {/if}
           </section>
-          
-          
         </div>
       </div>
     </main>
@@ -162,10 +160,6 @@
 
   .text-gray-900 {
     color: #1a202c;
-  }
-
-  .text-blue-500 {
-    color: #4299e1;
   }
 
   .text-red-600 {
